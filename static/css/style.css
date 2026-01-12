@@ -1,0 +1,34 @@
+body{
+	background: ivory;
+}
+
+
+.img-cent{
+	display: flex;
+	margin-top: 500px;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.my-img{
+	display: block;
+	width: 120px;
+	height: 150px;
+	text-align: center;
+	margin: auto;
+	max-width: 250;
+	padding: -5%;
+}
+
+h3{
+	text-align: center;
+	color: Black;
+	font-style: Italic
+
+}
+
+.login-form{
+	margin: auto;
+	max-width: 250px;
+}

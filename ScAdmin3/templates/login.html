@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Login{% endblock %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block body %}
+<div class="img-cent">
+        <img src="{%static "images/Print_Transparent.wpeg" alt="Image" %}" class="my-img">
+</div>
+<div class="login-wrapper">
+	<h3 class="mb3"> Login </h3>
+<form method="post" class="login-form">
+	{% csrf_token %}
+
+        <!-- Standard Django form rendering with paragraph tags -->
+        <div class="form-group">
+            {{ form.as_p }}
+	</div>
+	<div class="form-floating mb-3">
+		<input type="email" class="form-control" id= "exampleInputEmail" placeholder="example@gmail.com">
+		<label for="exampleInputEmail" class="form-label" id="floating-input">Email</label>
+	</div>
+	<div class="form-floating mb-3">
+		<input type="password" class="form-control"  required="True">
+		<label for="password" class="form-label">Password</label>
+	</div>
+	<div>
+		<button type="submit" class="btn btn-secondary">Submit</button>
+		
+</form>
+{% endblock %}

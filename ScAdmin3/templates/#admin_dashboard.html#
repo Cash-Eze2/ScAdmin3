@@ -1,3 +1,0 @@
-{% extends "base.dashboard.html" %}
-{% load static %}
-

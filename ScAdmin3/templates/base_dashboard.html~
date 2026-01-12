@@ -1,0 +1,10 @@
+<!DOCTYPE HTML5>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="vierport" content="width=device-wi_dth, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+  </body>
+</html>

@@ -2,9 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('/', views.user_login, name='login'),
-    path('login/', views.user_login, name='login'),
-    path('admin_dashbord', views.user, name='admin_dashboard'),
-    path('teacher_dashboard', views.user, name='teacher'),
-    path('student_dashboard', views.user, name='student'),
+    # Auth
+    path('',         views.user_login,  name='login'),    # root page = login
+    path('logout/',  views.user_logout, name='logout'),
+
+    # Dashboards
+    path('admin-dashboard/',   views.admin_dashboard,   name='admin_dashboard'),
+    path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
 ]

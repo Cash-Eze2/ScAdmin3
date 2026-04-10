@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Student Dashboard — ScAdmin{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar student">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🏫</div>
+      <div class="brand-text">ScAdmin</div>
+      <div class="brand-sub">Student Portal</div>
+    </div>
+
+    <div class="sidebar-section-label">MY SCHOOL</div>
+    <nav class="sidebar-nav">
+      <a href="{% url 'student_dashboard' %}" class="nav-link active">⊞ Dashboard</a>
+      <a href="#" class="nav-link">🗓️ My Timetable</a>
+      <a href="#" class="nav-link">📚 My Subjects</a>
+    </nav>
+
+    <div class="sidebar-section-label">MY RECORDS</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">✅ Attendance</a>
+      <a href="#" class="nav-link">📊 My Grades</a>
+      <a href="#" class="nav-link">💳 Fee Status</a>
+      <a href="#" class="nav-link">📋 Report Card</a>
+    </nav>
+
+    <div class="sidebar-section-label">ACCOUNT</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">👤 My Profile</a>
+      <a href="{% url 'logout' %}" class="nav-link logout-link">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Hello, {{ request.user.first_name|default:request.user.username }} 👋</h1>
+        <p class="page-subtitle">
+          {% if student_profile %}
+            Admission No. <strong>{{ student_profile.admission_number }}</strong>
+          {% endif %}
+        </p>
+      </div>
+      <div class="top-bar-right">
+        <div class="date-chip">📅 {% now "l, N j, Y" %}</div>
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+      </div>
+    </header>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert-banner">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- STAT CARDS -->
+    <section class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">✅</div>
+        <div class="stat-number">{{ attendance_pct|default:"0" }}%</div>
+        <div class="stat-label">Attendance Rate</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">📊</div>
+        <div class="stat-number">{{ avg_grade|default:"—" }}</div>
+        <div class="stat-label">Average Grade</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon">📚</div>
+        <div class="stat-number">{{ total_subjects|default:"0" }}</div>
+        <div class="stat-label">Subjects</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">💳</div>
+        <div class="stat-number">₦{{ fee_balance|default:"0" }}</div>
+        <div class="stat-label">Fee Balance</div>
+      </div>
+    </section>
+
+    <!-- TIMETABLE + GRADES -->
+    <section class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">🗓️ Today's Classes</span>
+          <a href="#" class="panel-link">Full timetable →</a>
+        </div>
+        {% for slot in todays_timetable %}
+        <div class="timetable-item">
+          <div class="slot-time">{{ slot.start_time|time:"H:i" }} – {{ slot.end_time|time:"H:i" }}</div>
+          <div>
+            <div class="slot-subject">{{ slot.subject.name }}</div>
+            <div class="slot-teacher">
+              {% if slot.subject.teacher %}{{ slot.subject.teacher.user.get_full_name }}{% else %}TBA{% endif %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">No classes today.</div>
+        {% endfor %}
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">📊 Recent Grades</span>
+          <a href="#" class="panel-link">All grades →</a>
+        </div>
+        {% for grade in recent_grades %}
+        <div class="grade-row">
+          <div class="grade-subject">{{ grade.subject.name }}</div>
+          <div class="grade-term">{{ grade.get_term_display }}</div>
+          <div class="grade-score">
+            <span class="grade-letter grade-{{ grade.grade_letter|lower|slice:':1' }}">{{ grade.grade_letter }}</span>
+            <span class="grade-num">{{ grade.score }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">No grades yet.</div>
+        {% endfor %}
+      </div>
+
+    </section>
+
+    <!-- ATTENDANCE + FEES -->
+    <section class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">✅ Attendance Summary</span>
+        </div>
+        <div class="att-summary">
+          <div class="att-row">
+            <span class="att-dot green"></span>
+            <span class="att-text">Present</span>
+            <span class="att-count">{{ present_count|default:"0" }} days</span>
+          </div>
+          <div class="att-row">
+            <span class="att-dot red"></span>
+            <span class="att-text">Absent</span>
+            <span class="att-count">{{ absent_count|default:"0" }} days</span>
+          </div>
+          <div class="att-row">
+            <span class="att-dot orange"></span>
+            <span class="att-text">Late</span>
+            <span class="att-count">{{ late_count|default:"0" }} days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">💳 Fee Status</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-label">Total Fee</span>
+          <span class="fee-value">₦{{ total_fee|default:"0.00" }}</span>
+        </div>
+        <div class="fee-divider"></div>
+        <div class="fee-row">
+          <span class="fee-label">Paid</span>
+          <span class="fee-value green-text">₦{{ amount_paid|default:"0.00" }}</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-label">Balance</span>
+          <span class="fee-value red-text">₦{{ fee_balance|default:"0.00" }}</span>
+        </div>
+        <div class="fee-divider"></div>
+        <div class="fee-status {% if fee_balance == 0 %}paid{% else %}owing{% endif %}">
+          {% if fee_balance == 0 %}✅ Fully Paid{% else %}⚠️ Balance Outstanding{% endif %}
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+{% endblock %}

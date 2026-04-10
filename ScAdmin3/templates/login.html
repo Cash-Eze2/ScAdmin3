@@ -1,30 +1,57 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Login{% endblock %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% block body %}
-<div class="img-cent">
-        <img src="{%static "images/Print_Transparent.wpeg" alt="Image" %}" class="my-img">
-</div>
-<div class="login-wrapper">
-	<h3 class="mb3"> Login </h3>
-<form method="post" class="login-form">
-	{% csrf_token %}
 
-        <!-- Standard Django form rendering with paragraph tags -->
-        <div class="form-group">
-            {{ form.as_p }}
-	</div>
-	<div class="form-floating mb-3">
-		<input type="email" class="form-control" id= "exampleInputEmail" placeholder="example@gmail.com">
-		<label for="exampleInputEmail" class="form-label" id="floating-input">Email</label>
-	</div>
-	<div class="form-floating mb-3">
-		<input type="password" class="form-control"  required="True">
-		<label for="password" class="form-label">Password</label>
-	</div>
-	<div>
-		<button type="submit" class="btn btn-secondary">Submit</button>
-		
-</form>
+{% block title %}Login — ScAdmin{% endblock %}
+
+{% block body %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow p-4" style="width: 100%; max-width: 420px;">
+
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <img src="{% static 'images/Print_Transparent.png' %}" alt="School Logo" height="80">
+            <h4 class="mt-2 fw-bold">ScAdmin</h4>
+        </div>
+
+        <!-- Error messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <input type="text"
+                       class="form-control"
+                       id="username"
+                       name="username"
+                       placeholder="Enter your username"
+                       required>
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <input type="password"
+                       class="form-control"
+                       id="password"
+                       name="password"
+                       placeholder="Enter your password"
+                       required>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+
+    </div>
+</div>
 {% endblock %}

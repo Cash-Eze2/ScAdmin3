@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Teacher Dashboard — ScAdmin{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar teacher">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🏫</div>
+      <div class="brand-text">ScAdmin</div>
+      <div class="brand-sub">Teacher Portal</div>
+    </div>
+
+    <div class="sidebar-section-label">MY CLASSES</div>
+    <nav class="sidebar-nav">
+      <a href="{% url 'teacher_dashboard' %}" class="nav-link active">⊞ Dashboard</a>
+      <a href="#" class="nav-link">👨‍🎓 My Students</a>
+      <a href="#" class="nav-link">📚 My Subjects</a>
+      <a href="#" class="nav-link">🗓️ Timetable</a>
+    </nav>
+
+    <div class="sidebar-section-label">RECORDS</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">✅ Mark Attendance</a>
+      <a href="#" class="nav-link">📊 Enter Grades</a>
+      <a href="#" class="nav-link">📋 Reports</a>
+    </nav>
+
+    <div class="sidebar-section-label">ACCOUNT</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">👤 My Profile</a>
+      <a href="{% url 'logout' %}" class="nav-link logout-link">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Good morning 👋</h1>
+        <p class="page-subtitle"><strong>{{ request.user.get_full_name|default:request.user.username }}</strong></p>
+      </div>
+      <div class="top-bar-right">
+        <div class="date-chip">📅 {% now "l, N j, Y" %}</div>
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+      </div>
+    </header>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert-banner">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- STAT CARDS -->
+    <section class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">👨‍🎓</div>
+        <div class="stat-number">{{ my_students|default:"0" }}</div>
+        <div class="stat-label">My Students</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">📚</div>
+        <div class="stat-number">{{ my_subjects|default:"0" }}</div>
+        <div class="stat-label">Subjects I Teach</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon">✅</div>
+        <div class="stat-number">{{ today_attendance|default:"0" }}</div>
+        <div class="stat-label">Present Today</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon">📋</div>
+        <div class="stat-number">{{ pending_grades|default:"0" }}</div>
+        <div class="stat-label">Grades Pending</div>
+      </div>
+    </section>
+
+    <!-- TIMETABLE + QUICK ACTIONS -->
+    <section class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">🗓️ Today's Schedule</span>
+          <a href="#" class="panel-link">Full timetable →</a>
+        </div>
+        {% for slot in todays_timetable %}
+        <div class="timetable-item">
+          <div class="slot-time">{{ slot.start_time|time:"H:i" }} – {{ slot.end_time|time:"H:i" }}</div>
+          <div>
+            <div class="slot-subject">{{ slot.subject.name }}</div>
+            <div class="slot-class">{{ slot.class_name.name }}</div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">No classes today.</div>
+        {% endfor %}
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">⚡ Quick Actions</span>
+        </div>
+        <div class="quick-actions">
+          <a href="#" class="action-btn">✅ Mark Attendance</a>
+          <a href="#" class="action-btn">📊 Enter Grades</a>
+          <a href="#" class="action-btn">👨‍🎓 View Students</a>
+          <a href="#" class="action-btn">📋 Class Report</a>
+        </div>
+        <div class="class-info-box">
+          <div class="class-info-title">📌 My Assigned Class</div>
+          {% if my_class %}
+          <div class="class-info-name">{{ my_class.name }}</div>
+          <div class="class-info-meta">Grade {{ my_class.grade_level }}</div>
+          {% else %}
+          <div style="color:#aaa;">No class assigned yet</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </section>
+
+    <!-- STUDENT TABLE -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">👨‍🎓 My Students</span>
+        <a href="#" class="panel-link">View all →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Admission No.</th>
+            <th>Attendance</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in my_students_list %}
+          <tr>
+            <td>{{ student.user.get_full_name }}</td>
+            <td>{{ student.admission_number }}</td>
+            <td><span class="badge badge-green">Present</span></td>
+            <td><a href="#" class="table-action">View</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="empty-row">No students yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+{% endblock %}

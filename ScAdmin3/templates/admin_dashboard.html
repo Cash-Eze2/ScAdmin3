@@ -1,2 +1,184 @@
-{% extends "base_dashboard.html" %}
-{% load ststic %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Admin Dashboard — ScAdmin{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar admin">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🏫</div>
+      <div class="brand-text">ScAdmin</div>
+      <div class="brand-sub">School Management</div>
+    </div>
+
+    <div class="sidebar-section-label">MAIN</div>
+    <nav class="sidebar-nav">
+      <a href="{% url 'admin_dashboard' %}" class="nav-link active">⊞ Dashboard</a>
+      <a href="#" class="nav-link">👨‍🎓 Students</a>
+      <a href="#" class="nav-link">👩‍🏫 Teachers</a>
+      <a href="#" class="nav-link">🏛️ Classes</a>
+      <a href="#" class="nav-link">📚 Subjects</a>
+    </nav>
+
+    <div class="sidebar-section-label">RECORDS</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">✅ Attendance</a>
+      <a href="#" class="nav-link">📊 Grades</a>
+      <a href="#" class="nav-link">💳 Fee Payments</a>
+      <a href="#" class="nav-link">🗓️ Timetable</a>
+    </nav>
+
+    <div class="sidebar-section-label">SYSTEM</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link">📋 Reports</a>
+      <a href="#" class="nav-link">⚙️ Settings</a>
+      <a href="{% url 'logout' %}" class="nav-link logout-link">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong></p>
+      </div>
+      <div class="top-bar-right">
+        <div class="date-chip">📅 {% now "l, N j, Y" %}</div>
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+      </div>
+    </header>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert-banner">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- STAT CARDS -->
+    <section class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">👨‍🎓</div>
+        <div class="stat-number">{{ total_students|default:"0" }}</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">👩‍🏫</div>
+        <div class="stat-number">{{ total_teachers|default:"0" }}</div>
+        <div class="stat-label">Total Teachers</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon">🏛️</div>
+        <div class="stat-number">{{ total_classes|default:"0" }}</div>
+        <div class="stat-label">Classes</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">💳</div>
+        <div class="stat-number">{{ pending_fees|default:"0" }}</div>
+        <div class="stat-label">Pending Fees</div>
+      </div>
+    </section>
+
+    <!-- QUICK ACTIONS + RECENT STUDENTS -->
+    <section class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">⚡ Quick Actions</span>
+        </div>
+        <div class="quick-actions">
+          <a href="#" class="action-btn">➕ Add Student</a>
+          <a href="#" class="action-btn">➕ Add Teacher</a>
+          <a href="#" class="action-btn">📝 Attendance</a>
+          <a href="#" class="action-btn">📊 Grades</a>
+          <a href="#" class="action-btn">💳 Payment</a>
+          <a href="#" class="action-btn">📋 Report</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">🕐 Recent Students</span>
+          <a href="#" class="panel-link">View all →</a>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Admission No.</th>
+              <th>Class</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in recent_students %}
+            <tr>
+              <td>{{ student.user.get_full_name }}</td>
+              <td>{{ student.admission_number }}</td>
+              <td>{{ student.enrollment_set.first.class_name }}</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="empty-row">No students yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- ATTENDANCE + FEES -->
+    <section class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">✅ Today's Attendance</span>
+        </div>
+        <div class="att-row">
+          <span class="att-label">Present</span>
+          <div class="att-bar-wrap"><div class="att-bar green" style="width:75%"></div></div>
+          <span class="att-pct">75%</span>
+        </div>
+        <div class="att-row">
+          <span class="att-label">Absent</span>
+          <div class="att-bar-wrap"><div class="att-bar red" style="width:15%"></div></div>
+          <span class="att-pct">15%</span>
+        </div>
+        <div class="att-row">
+          <span class="att-label">Late</span>
+          <div class="att-bar-wrap"><div class="att-bar orange" style="width:10%"></div></div>
+          <span class="att-pct">10%</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">💳 Fee Summary</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-label">Expected</span>
+          <span class="fee-value">₦{{ total_fees_expected|default:"0.00" }}</span>
+        </div>
+        <div class="fee-divider"></div>
+        <div class="fee-row">
+          <span class="fee-label">Collected</span>
+          <span class="fee-value green-text">₦{{ total_fees_collected|default:"0.00" }}</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-label">Outstanding</span>
+          <span class="fee-value red-text">₦{{ total_fees_outstanding|default:"0.00" }}</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+{% endblock %}
